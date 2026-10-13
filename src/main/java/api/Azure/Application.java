@@ -1,6 +1,5 @@
 package api.Azure;
 
-
 import java.util.Scanner;
 
 import org.springframework.boot.SpringApplication;
