@@ -1,9 +1,11 @@
 package api.Azure.controller;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController 
@@ -24,6 +26,19 @@ public class LogConsumerController {
             LogMessage.getMessage()
         );
         return "Log enviado con éxito [" + LogMessage.getLevel() + "]: " + LogMessage.getMessage();
+    }
+
+    @PostMapping("/log/batch")
+    public ResponseEntity<String> sendLogBatch(@RequestParam int count, @RequestParam String severity) {
+        for (int i = 1; i<= count; i++) {
+            String message = "Log de prueba masivo " + i;
+            rabbitTemplate.convertAndSend(
+                "DirectExchange",
+                severity,
+                message
+            );
+        }
+        return ResponseEntity.ok("Se enviaron " + count + " mensajes en rafaga a la cola: ");
     }
 
     public static class LogMessage {
