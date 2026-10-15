@@ -24,7 +24,7 @@ public class LogConsumer {
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
-    @RabbitListener(queues = "deadLetterQueue")
+    // @RabbitListener(queues = "deadLetterQueue")
     public void receiveDeadLetter(String message) {
         System.out.println("[DEAD LETTER CAPTURADO] Mensaje no procesado: " + message);
     }

@@ -20,25 +20,28 @@ public class LogConsumerController {
 
     @PostMapping ("/log")
     public String sendLog(@RequestBody LogMessage LogMessage){
+        String levelUpper = LogMessage.getLevel() != null ? LogMessage.getLevel().toUpperCase() : "INFO";
+
         rabbitTemplate.convertAndSend(
             "DirectExchange",
-            LogMessage.getLevel(),
+            levelUpper,
             LogMessage.getMessage()
         );
-        return "Log enviado con éxito [" + LogMessage.getLevel() + "]: " + LogMessage.getMessage();
+        return "Log enviado con éxito [" + levelUpper + "]: " + LogMessage.getMessage();
     }
 
     @PostMapping("/log/batch")
     public ResponseEntity<String> sendLogBatch(@RequestParam int count, @RequestParam String severity) {
+        String severityUpper = severity != null ? severity.toUpperCase() : "INFO";
         for (int i = 1; i<= count; i++) {
             String message = "Log de prueba masivo " + i;
             rabbitTemplate.convertAndSend(
                 "DirectExchange",
-                severity,
+                severityUpper,
                 message
             );
         }
-        return ResponseEntity.ok("Se enviaron " + count + " mensajes en rafaga a la cola: ");
+        return ResponseEntity.ok("Se enviaron " + count + " mensajes en rafaga con severidad: " + severityUpper);
     }
 
     public static class LogMessage {
