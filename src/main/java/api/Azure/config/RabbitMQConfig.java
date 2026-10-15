@@ -16,6 +16,11 @@ public class RabbitMQConfig {
     public Queue myQueue() {
         return new Queue("Hello", false);
     }
+
+    @Bean
+    public Queue deadLetterQueue() {
+        return new Queue("deadLetterQueue", true);
+    }
     
     @Bean
     public Queue allLogsQueue() {
@@ -66,7 +71,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding deadLetterBinding(DirectExchange deadLetterExchange, Queue myQueue) {
-        return BindingBuilder.bind(myQueue).to(deadLetterExchange).with("deadLetter");
+    public Binding deadLetterBinding(DirectExchange deadLetterExchange, Queue deadLetterQueue) {
+        return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with("deadLetter");
     }
 }

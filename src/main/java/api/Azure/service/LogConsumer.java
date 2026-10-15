@@ -1,5 +1,6 @@
 package api.Azure.service;
 
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,11 @@ public class LogConsumer {
 
     @RabbitListener(queues = "ErrorLogs")
     public void receiveErrorLogs(String message) {
+        if(message.contains ("ERROR") || message.contains("corrupto")) {
+            System.out.println("[FALLO SIMULADO] El mensaje está corrupto. redirigiendo a la DLQ... ");
+            throw new AmqpRejectAndDontRequeueException("Error intencional: Mensaje rechazado y enviado a DeadLetterQueue");
+        } 
+
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.println("[ALERTA CRITICA] Error detectado: " + message);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
