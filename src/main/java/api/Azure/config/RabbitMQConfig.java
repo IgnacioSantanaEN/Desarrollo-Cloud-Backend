@@ -6,30 +6,45 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 
 @Configuration 
 public class RabbitMQConfig {
     
+    // Queues =====================================================================
     @Bean 
     public Queue myQueue() {
         return new Queue("Hello", false);
     }
-
-    @Bean
-    public DirectExchange directexchange() {
-        return new DirectExchange("DirectExchange");
-    }
     
     @Bean
     public Queue allLogsQueue() {
-        return new Queue("AllLogs", false);
+        return QueueBuilder.durable("AllLogs")
+        .withArgument("x-dead-letter-exchange", "DeadLetterExchange")
+        .withArgument("x-dead-letter-routing-key", "deadLetter")
+        .build();
     }
 
     @Bean
     public Queue errorOnlyQueue() {
-        return new Queue("ErrorLogs", false);
+        return QueueBuilder.durable("ErrorLogs")
+        .withArgument("x-dead-letter-exchange", "DeadLetterExchange")
+        .withArgument("x-dead-letter-routing-key", "deadLetter")
+        .build();
     }
 
+    // Exchanges =====================================================================
+    @Bean
+    public DirectExchange directexchange() {
+        return new DirectExchange("DirectExchange");
+    }
+
+    @Bean
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange("DeadLetterExchange");
+    }
+
+    // Bindings =====================================================================
     @Bean
     public Binding bindAllInfo(DirectExchange directExchange, Queue allLogsQueue) {
         return BindingBuilder.bind(allLogsQueue).to(directExchange).with("INFO");
@@ -48,5 +63,10 @@ public class RabbitMQConfig {
     @Bean
     public Binding onlyErrors(DirectExchange directExchange, Queue errorOnlyQueue) {
         return BindingBuilder.bind(errorOnlyQueue).to(directExchange).with("ERROR");
+    }
+
+    @Bean
+    public Binding deadLetterBinding(DirectExchange deadLetterExchange, Queue myQueue) {
+        return BindingBuilder.bind(myQueue).to(deadLetterExchange).with("deadLetter");
     }
 }

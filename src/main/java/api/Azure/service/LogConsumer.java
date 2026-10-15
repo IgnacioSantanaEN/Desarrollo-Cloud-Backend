@@ -17,4 +17,9 @@ public class LogConsumer {
         System.out.println("[ALERTA CRITICA] Error detectado: " + message);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
+
+    @RabbitListener(queues = "deadLetterQueue")
+    public void receiveDeadLetter(String message) {
+        System.out.println("[DEAD LETTER CAPTURADO] Mensaje no procesado: " + message);
+    }
 }
