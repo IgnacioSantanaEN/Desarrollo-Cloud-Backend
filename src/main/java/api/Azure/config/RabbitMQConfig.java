@@ -12,11 +12,6 @@ import org.springframework.amqp.core.QueueBuilder;
 public class RabbitMQConfig {
     
     // Queues =====================================================================
-    @Bean 
-    public Queue myQueue() {
-        return new Queue("Hello", false);
-    }
-
     @Bean
     public Queue deadLetterQueue() {
         return new Queue("deadLetterQueue", true);
