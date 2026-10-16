@@ -7,6 +7,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Configuration 
 public class RabbitMQConfig {
@@ -35,7 +36,7 @@ public class RabbitMQConfig {
 
     // Exchanges =====================================================================
     @Bean
-    public DirectExchange directexchange() {
+    public DirectExchange directExchange() {
         return new DirectExchange("DirectExchange");
     }
 
@@ -46,27 +47,27 @@ public class RabbitMQConfig {
 
     // Bindings =====================================================================
     @Bean
-    public Binding bindAllInfo(DirectExchange directExchange, Queue allLogsQueue) {
+    public Binding bindAllInfo(@Qualifier("directExchange") DirectExchange directExchange, Queue allLogsQueue) {
         return BindingBuilder.bind(allLogsQueue).to(directExchange).with("INFO");
     }
 
     @Bean 
-    public Binding bindAllWarnings(DirectExchange directExchange, Queue allLogsQueue) {
+    public Binding bindAllWarnings(@Qualifier("directExchange") DirectExchange directExchange, Queue allLogsQueue) {
         return BindingBuilder.bind(allLogsQueue).to(directExchange).with("WARNING");
     }
 
     @Bean
-    public Binding bindAllErrors(DirectExchange directExchange, Queue allLogsQueue) {
+    public Binding bindAllErrors(@Qualifier("directExchange") DirectExchange directExchange, Queue allLogsQueue) {
         return BindingBuilder.bind(allLogsQueue).to(directExchange).with("ERROR");
     }
 
     @Bean
-    public Binding onlyErrors(DirectExchange directExchange, Queue errorOnlyQueue) {
+    public Binding onlyErrors(@Qualifier("directExchange") DirectExchange directExchange, Queue errorOnlyQueue) {
         return BindingBuilder.bind(errorOnlyQueue).to(directExchange).with("ERROR");
     }
 
     @Bean
-    public Binding deadLetterBinding(DirectExchange deadLetterExchange, Queue deadLetterQueue) {
+    public Binding deadLetterBinding(@Qualifier("deadLetterExchange") DirectExchange deadLetterExchange, Queue deadLetterQueue) {
         return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with("deadLetter");
     }
 }
