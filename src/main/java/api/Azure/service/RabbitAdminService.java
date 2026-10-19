@@ -1,0 +1,41 @@
+package api.Azure.service;
+
+import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class RabbitAdminService {
+
+    @Autowired
+    private AmqpAdmin amqpAdmin;
+
+    public RabbitAdminService(AmqpAdmin amqpAdmin) {
+        this.amqpAdmin = amqpAdmin;
+    }
+
+    public void createQueue(String queueName) {
+        Queue queue = new Queue(queueName, true);
+        amqpAdmin.declareQueue(queue);
+    }
+    
+    public void createExchange(String exchangeName) {
+        DirectExchange exchange = new DirectExchange(exchangeName);
+        amqpAdmin.declareExchange(exchange);
+    }
+
+    public void createBinding(String queueName, String exchangeName, String routingKey) {
+        Binding binding = new Binding(
+            queueName,
+            Binding.DestinationType.QUEUE,
+            exchangeName,
+            routingKey,
+            null
+        );
+        amqpAdmin.declareBinding(binding);
+    }
+
+    public boolean deleteQueue(String queueName) {
+        return amqpAdmin.deleteQueue(queueName);
+    }
+}
