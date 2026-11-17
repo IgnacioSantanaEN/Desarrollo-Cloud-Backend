@@ -23,7 +23,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/log", "/log/**").permitAll()
                 .requestMatchers("/admin", "/admin/**").permitAll()
-                .requestMatchers("/api/kafka/**", "/admin/kafka/**").permitAll()
+                .requestMatchers("/api/banco/**", "/admin/kafka/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

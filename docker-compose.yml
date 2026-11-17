@@ -9,19 +9,17 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     healthcheck:
-      test: ["CMD-SHELL", "echo 'zookeeper is running'"]
+      test: ["CMD-SHELL", "cub zk-ready localhost:2181 5 || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 20s
     networks:
       - rabbitmq_cluster
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
-    depends_on:
-      - zookeeper
     ports:
       - "9092:9092"
     environment:
@@ -36,24 +34,28 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL", "timeout 1 bash -c 'cat </dev/null > /dev/tcp/localhost/9092' || exit 1"]
+      interval: 5s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 60s
+    depends_on:
+      zookeeper:
+        condition: service_healthy  
     networks:
       - rabbitmq_cluster
     
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
-    depends_on:
-      - kafka
     ports:
       - "8081:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: "local"
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
+    depends_on:
+      kafka:
+        condition: service_healthy  
     networks:
       - rabbitmq_cluster
 
@@ -77,6 +79,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+    depends_on:
+      kafka:
+        condition: service_healthy
     networks:
       - rabbitmq_cluster
 
@@ -119,11 +124,7 @@ services:
       SPRING_RABBITMQ_PASSWORD: "admin123"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:29092"
     depends_on:
-      rabbitmq-1:
-        condition: service_healthy
       rabbitmq-2:
-        condition: service_healthy
-      kafka:
         condition: service_healthy
     networks:
       - rabbitmq_cluster
