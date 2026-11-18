@@ -1,14 +1,12 @@
 package api.Azure.service;
 
 import org.springframework.amqp.core.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RabbitAdminService {
 
-    @Autowired
-    private AmqpAdmin amqpAdmin;
+    private final AmqpAdmin amqpAdmin;
 
     public RabbitAdminService(AmqpAdmin amqpAdmin) {
         this.amqpAdmin = amqpAdmin;
@@ -37,5 +35,21 @@ public class RabbitAdminService {
 
     public boolean deleteQueue(String queueName) {
         return amqpAdmin.deleteQueue(queueName);
+    }
+
+    // En RabbitAdminService.java agrega:
+    public boolean deleteExchange(String exchangeName) {
+        return amqpAdmin.deleteExchange(exchangeName);
+    }
+
+    public void removeBinding(String queueName, String exchangeName, String routingKey) {
+        Binding binding = new Binding(
+        queueName,
+        Binding.DestinationType.QUEUE,
+        exchangeName,
+        routingKey,
+        null
+    );
+        amqpAdmin.removeBinding(binding);
     }
 }

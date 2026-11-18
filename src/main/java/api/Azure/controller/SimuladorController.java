@@ -12,9 +12,10 @@ import api.Azure.model.Transaccion;
 @RestController
 @RequestMapping("/api/banco")
 public class SimuladorController {
-    private final KafkaTemplate<String, Transaccion> kafka;
 
-    public SimuladorController(KafkaTemplate<String, Transaccion> kafka) {
+    private final KafkaTemplate<String, Object> kafka;
+
+    public SimuladorController(KafkaTemplate<String, Object> kafka) {
         this.kafka = kafka;
     }
 

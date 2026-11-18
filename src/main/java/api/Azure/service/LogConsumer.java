@@ -14,9 +14,9 @@ public class LogConsumer {
 
     @RabbitListener(queues = "ErrorLogs")
     public void receiveErrorLogs(String message) {
-        if(message.contains ("ERROR") || message.contains("corrupto")) {
-            System.out.println("[FALLO SIMULADO] El mensaje está corrupto. redirigiendo a la DLQ... ");
-            throw new AmqpRejectAndDontRequeueException("Error intencional: Mensaje rechazado y enviado a DeadLetterQueue");
+        if(message.contains ("corrupto") || message.contains("FAIL")) {
+            System.out.println("El mensaje está corrupto. redirigiendo a la DLQ... ");
+            throw new AmqpRejectAndDontRequeueException("Error: Mensaje rechazado y enviado a DeadLetterQueue");
         } 
 
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -24,7 +24,7 @@ public class LogConsumer {
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
-    // @RabbitListener(queues = "deadLetterQueue")
+    @RabbitListener(queues = "deadLetterQueue")
     public void receiveDeadLetter(String message) {
         System.out.println("[DEAD LETTER CAPTURADO] Mensaje no procesado: " + message);
     }

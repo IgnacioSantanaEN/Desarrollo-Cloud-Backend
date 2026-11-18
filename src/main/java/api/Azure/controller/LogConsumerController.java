@@ -2,14 +2,12 @@ package api.Azure.controller;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController 
-@CrossOrigin(origins = "http://localhost:5173")
 public class LogConsumerController {
     
     private final RabbitTemplate rabbitTemplate;
