@@ -13,6 +13,8 @@ public class KafkaTopicConfig {
         return TopicBuilder.name("banco-transacciones")
                 .partitions(3)
                 .replicas(1)
+                .config("retention.ms", "86400000")
+                .config("cleanup.policy", "delete")
                 .build();
     }
 
@@ -21,6 +23,8 @@ public class KafkaTopicConfig {
         return TopicBuilder.name("banco-alertas")
                 .partitions(3)
                 .replicas(1)
+                .config("retention.ms", "604800000")
+                .config("cleanup.policy", "delete")
                 .build();
     }
 }
